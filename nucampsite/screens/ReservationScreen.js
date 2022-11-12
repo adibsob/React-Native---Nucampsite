@@ -21,16 +21,15 @@ const ReservationScreen = () => {
         console.log('campers:', campers);
         console.log('hikeIn:', hikeIn);
         console.log('date:', date);
-
+        setShowModal(!showModal);
     };
 
-    const restForm = () => {
+    const resetForm = () => {
         setCampers(1);
         setHikeIn(false);
         setDate(new Date());
         setShowCalendar(false);
-        setShowModal(!showModal);
-    }
+    };
 
     return (
         <ScrollView>
@@ -98,7 +97,7 @@ const ReservationScreen = () => {
                     <Button
                         onPress={() => {
                             setShowModal(!showModal);
-                            restForm();
+                            resetForm();
                         }}
                         color={'#5677FF'}
                         title='Close'
