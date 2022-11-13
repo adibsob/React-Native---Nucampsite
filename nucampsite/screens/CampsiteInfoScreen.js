@@ -1,20 +1,20 @@
 import { useState } from 'react';
-import { Button, FlatList, Modal, StyleSheet, Text, View } from 'react-native';
-import { Input, Rating } from 'react-native-elements';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { FlatList, StyleSheet, Text, View, Button, Modal } from 'react-native';
 import RenderCampsite from '../features/campsites/RenderCampsite';
+import { useSelector } from 'react-redux';
 import { toggleFavorite } from '../features/favorites/favoritesSlice';
-import { postComments } from '../features/comments/commentsSlice';
+import { Input, Rating } from 'react-native-elements';
+import { postComment } from '../features/comments/commentsSlice';
 
 const CampsiteInfoScreen = ({ route }) => {
     const { campsite } = route.params;
     const comments = useSelector((state) => state.comments);
-    const favorites = useSelector((state) => state.favorites);
     const [showModal, setShowModal] = useState(false);
     const [rating, setRating] = useState(5);
     const [author, setAuthor] = useState('');
     const [text, setText] = useState('');
-
+    const favorites = useSelector((state) => state.favorites);
     const dispatch = useDispatch();
 
     const handleSubmit = () => {
@@ -22,9 +22,9 @@ const CampsiteInfoScreen = ({ route }) => {
             author,
             rating,
             text,
-            campsiteId: campsite.id
+            campsiteId: campsite.id,
         };
-        dispatch(postComments(newComment))
+        dispatch(postComment(newComment));
         setShowModal(!showModal);
     };
 
@@ -41,12 +41,15 @@ const CampsiteInfoScreen = ({ route }) => {
                 <Rating
                     startingValue={item.rating}
                     imageSize={10}
-                    style={{ alignItems: 'flex-start', paddingVertical: '5%' }}
+                    style={{
+                        alignItems: 'flex-start',
+                        paddingVertical: '5%',
+                    }}
                     readonly
                 />
-                <Text style={{ fontSize: 12 }}>
-                    {`-- ${item.author}, ${item.date}`}
-                </Text>
+                <Text
+                    style={{ fontSize: 12 }}
+                >{`-- ${item.author}, ${item.date}`}</Text>
             </View>
         );
     };
@@ -61,16 +64,14 @@ const CampsiteInfoScreen = ({ route }) => {
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={{
                     marginHorizontal: 20,
-                    paddingVertical: 20
+                    paddingVertical: 20,
                 }}
                 ListHeaderComponent={
                     <>
                         <RenderCampsite
                             campsite={campsite}
                             isFavorite={favorites.includes(campsite.id)}
-                            markFavorite={() =>
-                                dispatch(toggleFavorite(campsite.id))
-                            }
+                            markFavorite={() => dispatch(toggleFavorite(campsite.id))}
                             onShowModal={() => setShowModal(!showModal)}
                         />
                         <Text style={styles.commentsTitle}>Comments</Text>
@@ -78,54 +79,57 @@ const CampsiteInfoScreen = ({ route }) => {
                 }
             />
             <Modal
-                animationType='slide'
+                animationType="slide"
                 transparent={false}
                 visible={showModal}
                 onRequestClose={() => setShowModal(!showModal)}
             >
                 <View style={styles.modal}>
                     <Rating
+                        showRating
                         startingValue={rating}
                         imageSize={40}
                         onFinishRating={(rating) => setRating(rating)}
                         style={{ paddingVertical: 10 }}
-                        showRating={true}
-                    >
-                        Rating:
-                    </Rating>
+                    />
                     <Input
-                        placeholder='Author'
-                        leftIcon={{ type: 'font-awesome', name: 'user-o' }}
+                        placeholder="Author"
+                        leftIcon={{
+                            type: 'font-awesome',
+                            name: 'user-o',
+                        }}
                         leftIconContainerStyle={{ paddingRight: 10 }}
-                        onChangeText={(author) => setAuthor(author)}
+                        onChangeText={(text) => setAuthor(text)}
                         value={author}
-                    ></Input>
+                    />
                     <Input
-                        placeholder='Comment:'
-                        leftIcon={{ type: 'font-awesome', name: 'comment-o' }}
+                        placeholder="Comment"
+                        leftIcon={{
+                            type: 'font-awesome',
+                            name: 'comment-o',
+                        }}
                         leftIconContainerStyle={{ paddingRight: 10 }}
                         onChangeText={(text) => setText(text)}
                         value={text}
-                    ></Input>
+                    />
                     <View style={{ margin: 10 }}>
                         <Button
+                            title="Submit"
+                            color="#5637DD"
                             onPress={() => {
                                 handleSubmit();
                                 resetForm();
                             }}
-                            color='#5637DD'
-                            title='Submit'
                         />
                     </View>
-
                     <View style={{ margin: 10 }}>
                         <Button
                             onPress={() => {
-                                setShowModal(!showModal)
+                                setShowModal(!showModal);
                                 resetForm();
                             }}
-                            color='#808080'
-                            title='Cancel'
+                            color="#808080"
+                            title="Cancel"
                         />
                     </View>
                 </View>
@@ -142,17 +146,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#43484D',
         padding: 10,
-        paddingTop: 30
+        paddingTop: 30,
     },
     commentItem: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
     },
     modal: {
         justifyContent: 'center',
-        margin: 20
-    }
+        margin: 20,
+    },
 });
 
 export default CampsiteInfoScreen;
